@@ -1,8 +1,19 @@
-# KDMID Person Autofill
+# KDMID — Person Autofill for Notarial Applications
 
 [Русский](README.md) | **English**
 
-A local Chrome extension for saved person profiles on [notary.kdmid.ru](https://notary.kdmid.ru/).
+**KDMID — My People** is a free, open-source Chrome extension that autofills participants' personal details on [notary.kdmid.ru](https://notary.kdmid.ru/), the Russian Ministry of Foreign Affairs consular notary portal. It helps reuse names, passport details, and addresses of principals and representatives when preparing powers of attorney for Russian consulates abroad.
+
+Enter each person's details once, save a local profile, and select it when the participant form is open. Profiles stay in local Chrome storage. No application account, server, Docker, ChatGPT, Claude, or external API is required. Form filling uses ordinary JavaScript rather than AI.
+
+## Use Cases
+
+- Autofill a principal's or representative's passport details in a notarial application on `notary.kdmid.ru`.
+- Save multiple people and reuse their details when preparing further consular powers of attorney.
+- Fill a natural person's form from a saved profile instead of retyping their name, identity document, and address.
+- Transfer saved profiles between computers using local JSON export and import.
+
+This is an independent, unofficial helper. It fills person fields; document text, consulate selection, appointment booking, and application registration remain separate user actions on the relevant official services.
 
 ## Workflow
 
@@ -62,3 +73,11 @@ The last command writes an installable ZIP under `dist/`. Python 3 is only neede
 Tests use Node's test runner and jsdom. They cover role preservation, hidden/disabled controls, dates, document dependencies, replacement, and profile persistence. The observed live portal structure is documented in [docs/portal-fields.md](docs/portal-fields.md).
 
 Portal navigation, document-dependent fields, and the address-country list have been inspected live. Extension installation and an end-to-end fill on the live portal still need manual verification. Partial birth dates are not supported by the profile editor. Changes to the portal may require an extension update.
+
+## License and Liability
+
+The project is distributed under the [MIT License](LICENSE). You may use, modify, and redistribute it while retaining the copyright notice and license text.
+
+The software is provided "as is", without guarantees of operation, accurate form filling, or fitness for a particular purpose. The license includes a warranty disclaimer and limitation of authors' and copyright holders' liability. These provisions operate only to the extent permitted by applicable law and do not guarantee immunity from all liability.
+
+Review filled details before adding a person or registering an application, and keep profile backups. The extension provides no legal advice and does not guarantee acceptance of documents by a consulate. The project is not affiliated with the Russian Ministry of Foreign Affairs, consulates, or Google, and is not their official product.
