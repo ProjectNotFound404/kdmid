@@ -1,5 +1,5 @@
 from pathlib import Path
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageFont
 
 root = Path(__file__).resolve().parent.parent
 assets = root / "docs" / "store-assets"
@@ -43,4 +43,55 @@ draw.polygon([box((217, 125)), box((232, 139)), box((217, 153))], fill="#f4c867"
 logo = icon.resize((176 * size, 176 * size), Image.Resampling.LANCZOS)
 promo.paste(logo, (32 * size, 52 * size), logo)
 promo.resize((440, 280), Image.Resampling.LANCZOS).save(assets / "small-promo.png")
-print("Generated four extension icons and a 440x280 promotional tile.")
+def font(pixels, bold=False):
+    candidates = [
+        "/System/Library/Fonts/Supplemental/Arial Bold.ttf" if bold else "/System/Library/Fonts/Supplemental/Arial.ttf",
+        "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf" if bold else "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+        "C:/Windows/Fonts/arialbd.ttf" if bold else "C:/Windows/Fonts/arial.ttf",
+    ]
+    for candidate in candidates:
+        if Path(candidate).exists():
+            return ImageFont.truetype(candidate, pixels * size)
+    raise RuntimeError("Install Arial or DejaVu Sans to render the marquee text.")
+
+
+marquee = Image.new("RGB", (1400 * size, 560 * size), "#103d57")
+draw = ImageDraw.Draw(marquee)
+draw.ellipse(box((850, -180, 1570, 660)), fill="#196487")
+draw.rounded_rectangle(box((1050, 108, 1310, 412)), radius=24 * size, fill="#ecf4f8")
+for index, width in enumerate((168, 190, 132, 170)):
+    y = 156 + index * 40
+    draw.rounded_rectangle(box((1082, y, 1082 + width, y + 10)), radius=5 * size, fill="#86a9bc")
+logo = icon.resize((290 * size, 290 * size), Image.Resampling.LANCZOS)
+marquee.paste(logo, (918 * size, 238 * size), logo)
+texts = [
+    (88, 120, "КД МИД — мои люди", 58, True, "white"),
+    (88, 211, "Данные человека — один раз", 34, False, "white"),
+    (88, 268, "Автозаполнение на notary.kdmid.ru", 26, False, "#c8e2ee"),
+    (88, 375, "В вашем браузере. Зашифровано.", 27, True, "#f4c867"),
+]
+for x, y, text, pixels, bold, color in texts:
+    face = font(pixels, bold)
+    bounds = draw.textbbox((0, 0), text, font=face)
+    assert x * size + bounds[2] < 900 * size, text
+    draw.text((x * size, y * size), text, font=face, fill=color)
+marquee.resize((1400, 560), Image.Resampling.LANCZOS).save(assets / "marquee-promo.png", optimize=True)
+icon_markup = (assets / "icon.svg").read_text().split(">", 1)[1].rsplit("</svg>", 1)[0]
+svg_texts = "\n".join(
+    f'<text x="{x}" y="{y + pixels}" font-size="{pixels}" font-weight="{700 if bold else 400}" fill="{color}">{text}</text>'
+    for x, y, text, pixels, bold, color in texts
+)
+lines = "\n".join(
+    f'<rect x="1082" y="{156 + index * 40}" width="{width}" height="10" rx="5" fill="#86a9bc"/>'
+    for index, width in enumerate((168, 190, 132, 170))
+)
+(assets / "marquee-promo.svg").write_text(f'''<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="560" viewBox="0 0 1400 560" font-family="Arial, DejaVu Sans, sans-serif">
+  <rect width="1400" height="560" fill="#103d57"/>
+  <ellipse cx="1210" cy="240" rx="360" ry="420" fill="#196487"/>
+  <rect x="1050" y="108" width="260" height="304" rx="24" fill="#ecf4f8"/>
+  {lines}
+  <g transform="translate(918 238) scale(2.265625)">{icon_markup}</g>
+  {svg_texts}
+</svg>
+''')
+print("Generated four extension icons, a 440x280 tile, and a 1400x560 marquee.")

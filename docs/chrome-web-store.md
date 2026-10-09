@@ -13,7 +13,7 @@ Run `npm run package` from the repository root. It produces two different ZIPs:
 
 Store uploads must have the manifest at the root, as required by [Google's packaging instructions](https://developer.chrome.com/docs/webstore/prepare). Do not upload GitHub's **Download ZIP** archive.
 
-Included: Manifest V3, local JavaScript, PNG icons at 16/32/48/128 pixels, and MIT license. The 128-pixel store icon is `extension/icon-128.png`; the 440×280 promotional tile is `docs/store-assets/small-promo.png`. Assets can be regenerated with `python3 scripts/generate_store_assets.py` using Pillow; Pillow is only an asset-development dependency.
+Included: Manifest V3, local JavaScript, PNG icons at 16/32/48/128 pixels, and MIT license. The 128-pixel store icon is `extension/icon-128.png`; the 440×280 promotional tile is `docs/store-assets/small-promo.png`. An optional 1400×560 marquee banner is `docs/store-assets/marquee-promo.png`. Assets can be regenerated with `python3 scripts/generate_store_assets.py` using Pillow and Arial or DejaVu Sans; these are only asset-development dependencies.
 
 The privacy policy is [PRIVACY.md](../PRIVACY.md). After pushing it, its public URL is `https://github.com/ProjectNotFound404/kdmid/blob/main/PRIVACY.md`.
 
@@ -47,6 +47,7 @@ Suggested fields:
 | Privacy policy | `https://github.com/ProjectNotFound404/kdmid/blob/main/PRIVACY.md` |
 | Icon | `extension/icon-128.png` |
 | Small promo tile | `docs/store-assets/small-promo.png` |
+| Marquee promo tile (optional) | `docs/store-assets/marquee-promo.png` |
 
 Paste this Russian description:
 
@@ -56,7 +57,11 @@ Paste this Russian description:
 >
 > Возможности: несколько профилей людей; поиск страны адреса по списку портала; локальное хранение, защищённое отдельным паролем; зашифрованный экспорт и импорт; подтверждение замены отличающихся данных в форме.
 >
-> Расширение работает без ИИ, сервера, облачных API и аккаунта приложения. Разработчик не получает ваши профили. Выбранные данные становятся доступны официальному порталу после нажатия «Заполнить».
+> Ваши персональные данные хранятся в зашифрованном виде (AES-256-GCM) в вашем профиле Chrome на вашем компьютере. Разработчик не получает ваши профили, пароль или ключ шифрования и не имеет доступа к ним. Расширение не хранит данные на серверах разработчика и не отправляет их разработчику, в облачные API или сервисы аналитики.
+>
+> Для автозаполнения расширение расшифровывает данные локально после разблокировки хранилища. Только после вашего нажатия «Заполнить» выбранные данные попадают в форму официального портала notary.kdmid.ru и становятся доступны его скриптам. Новые файлы экспорта также зашифрованы; где их хранить и кому передавать, решаете вы.
+>
+> Расширение работает без ИИ, собственного сервера и аккаунта приложения.
 >
 > Тип участника выбирается на портале. Текст доверенности, выбор консульства, запись на приём и регистрация заявления выполняются пользователем. Расширение не является официальным продуктом МИД России или Google. Проверяйте заполненные поля перед дальнейшими действиями.
 >
@@ -64,7 +69,7 @@ Paste this Russian description:
 
 English secondary description, usable in a later localized listing:
 
-> KDMID — My People is a free, unofficial Chrome extension for reusing names, passport details, and addresses in notarial application participant forms on notary.kdmid.ru, the Russian Ministry of Foreign Affairs consular notary portal. Save several local person profiles and select one when preparing a consular power of attorney. Saved data and new backups are encrypted with a separate vault password. No AI, backend, cloud APIs, or application account are required. The developer does not receive profiles. Data enters the official portal form only when you click Fill. Choose the participant role on the portal yourself, review the filled fields, and handle document text, appointment booking, and registration separately. Open source under MIT: https://github.com/ProjectNotFound404/kdmid. Requires desktop Chrome. A forgotten vault password cannot be recovered.
+> KDMID — My People is a free, unofficial Chrome extension for reusing names, passport details, and addresses in notarial application participant forms on notary.kdmid.ru, the Russian Ministry of Foreign Affairs consular notary portal. Save several local person profiles and select one when preparing a consular power of attorney. Saved data and new backups are encrypted with a separate vault password. No AI, backend, cloud APIs, or application account are required. Person profiles stay encrypted with AES-256-GCM in your Chrome profile on your own computer. The developer does not receive or have access to profiles, passwords, or encryption keys. The extension neither stores data on developer servers nor sends it to the developer, cloud APIs, or analytics services. After unlocking, decryption happens locally for form filling. Data enters the official portal form and becomes accessible to its scripts only when you click Fill. You choose where to keep or share encrypted exports. Choose the participant role on the portal yourself, review the filled fields, and handle document text, appointment booking, and registration separately. Open source under MIT: https://github.com/ProjectNotFound404/kdmid. Requires desktop Chrome. A forgotten vault password cannot be recovered.
 
 The current extension UI and manifest are Russian. A separately selectable English store locale requires corresponding manifest localization; an English README alone does not enable it. See [listing localization](https://developer.chrome.com/docs/webstore/cws-dashboard-listing).
 

@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="560" viewBox="0 0 1400 560" font-family="Arial, DejaVu Sans, sans-serif">
+  <rect width="1400" height="560" fill="#103d57"/>
+  <ellipse cx="1210" cy="240" rx="360" ry="420" fill="#196487"/>
+  <rect x="1050" y="108" width="260" height="304" rx="24" fill="#ecf4f8"/>
+  <rect x="1082" y="156" width="168" height="10" rx="5" fill="#86a9bc"/>
+<rect x="1082" y="196" width="190" height="10" rx="5" fill="#86a9bc"/>
+<rect x="1082" y="236" width="132" height="10" rx="5" fill="#86a9bc"/>
+<rect x="1082" y="276" width="170" height="10" rx="5" fill="#86a9bc"/>
+  <g transform="translate(918 238) scale(2.265625)">
+  <rect x="16" y="16" width="96" height="96" rx="24" fill="#196487"/>
+  <circle cx="64" cy="44" r="11" fill="white"/>
+  <rect x="39" y="62" width="50" height="30" rx="15" fill="white"/>
+  <circle cx="88" cy="87" r="18" fill="#f4c867" stroke="#196487" stroke-width="3"/>
+  <rect x="81" y="76" width="14" height="17" rx="7" fill="none" stroke="#172e40" stroke-width="3"/>
+  <rect x="78" y="85" width="20" height="14" rx="3" fill="#172e40"/>
+  <circle cx="88" cy="91" r="2" fill="#f4c867"/>
+</g>
+  <text x="88" y="178" font-size="58" font-weight="700" fill="white">КД МИД — мои люди</text>
+<text x="88" y="245" font-size="34" font-weight="400" fill="white">Данные человека — один раз</text>
+<text x="88" y="294" font-size="26" font-weight="400" fill="#c8e2ee">Автозаполнение на notary.kdmid.ru</text>
+<text x="88" y="402" font-size="27" font-weight="700" fill="#f4c867">В вашем браузере. Зашифровано.</text>
+</svg>

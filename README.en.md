@@ -4,7 +4,7 @@
 
 **KDMID — My People** is a free, open-source Chrome extension that autofills participants' personal details on [notary.kdmid.ru](https://notary.kdmid.ru/), the Russian Ministry of Foreign Affairs consular notary portal. It helps reuse names, passport details, and addresses of principals and representatives when preparing powers of attorney for Russian consulates abroad.
 
-Enter each person's details once, save a local profile, and select it when the participant form is open. Profiles stay in local Chrome storage. No application account, server, Docker, ChatGPT, Claude, or external API is required. Form filling uses ordinary JavaScript rather than AI.
+Enter each person's details once, save a local profile, and select it when the participant form is open. Person profiles stay encrypted in your local Chrome profile. The developer does not receive profiles, passwords, or encryption keys, and data is neither stored on developer servers nor sent to the developer, cloud APIs, or analytics services. The extension decrypts profiles locally after unlocking; data enters the official portal form only when you click **Заполнить**. No application account, server, Docker, ChatGPT, Claude, or external API is required. Form filling uses ordinary JavaScript rather than AI.
 
 ## Use Cases
 
