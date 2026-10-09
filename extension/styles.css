@@ -33,7 +33,7 @@ aside > button { width: 100%; margin-bottom: 24px; }
 .card { background: white; border: 1px solid #dde5eb; border-radius: 12px; padding: 28px; }
 #fields { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 .field { min-width: 0; }
-.field:has(textarea), .field:has(#passcode), .field:has(#namelat), .field:has(#citizenship), .field:has(#country) { grid-column: 1 / -1; }
+.field.wide { grid-column: 1 / -1; }
 small { display: block; font-size: 12px; margin-top: 6px; }
 .checkbox { display: flex; align-items: center; gap: 10px; }
 .checkbox input { width: 18px; height: 18px; }
@@ -58,3 +58,8 @@ small { display: block; font-size: 12px; margin-top: 6px; }
 #confirm p { margin: 0; }
 [hidden] { display: none !important; }
 @media (max-width: 720px) { .workspace { margin: 24px auto; padding: 0 16px; } .layout { grid-template-columns: 1fr; } aside { position: static; } #fields { grid-template-columns: 1fr; } .card { padding: 20px; } }
+
+.vault-gate { max-width: 600px; margin: 20px auto; }
+.vault-gate label { margin-bottom: 16px; }
+.layout > button { grid-column: 1 / -1; justify-self: start; }
+.popup .vault-gate { padding: 0; border: 0; }

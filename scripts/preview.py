@@ -15,7 +15,7 @@ class Handler(SimpleHTTPRequestHandler):
             self.wfile.write(content)
         elif self.path in ("/people.html", "/popup.html"):
             content = (root / "extension" / self.path.lstrip("/")).read_text()
-            content = content.replace("<head>", '<head><script src="/__chrome_preview.js"></script>', 1)
+            content = content.replace("<head>", '<head><script type="module" src="/__chrome_preview.js"></script>', 1)
             self.send_response(200)
             self.send_header("Content-Type", "text/html; charset=utf-8")
             self.end_headers()

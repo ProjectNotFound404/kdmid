@@ -1,10 +1,12 @@
+import { vaultApi, testPassword } from "./fixtures/vault-api.js";
+import { decryptPeople, deriveKey } from "../extension/crypto-vault.js";
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { JSDOM } from "jsdom";
 import { fields, normalizePerson, personName } from "../extension/profiles.js";
-import { loadPeople, savePerson, deletePerson, importPeople } from "../extension/storage.js";
-import { createBackup, readBackup, maxBackupBytes } from "../extension/backup.js";
+import { loadPeople, savePerson, deletePerson, importPeople, exportPeople } from "../extension/storage.js";
+import { createBackup, maxBackupBytes } from "../extension/backup.js";
 import { addressCountries, findAddressCountry } from "../extension/countries.js";
 import { attachCountryPicker } from "../extension/country-picker.js";
 
@@ -12,15 +14,14 @@ const initial = () => ({ id: "existing", ...normalizePerson({ fam: "Тестов
 const flush = async () => { for (let i = 0; i < 4; i++) await new Promise((resolve) => setTimeout(resolve, 0)); };
 
 async function editor(people = [initial()]) {
-  const data = { people };
-  globalThis.chrome = { storage: { local: {
-    async setAccessLevel() {},
-    async get(key) { return { [key]: structuredClone(data[key]) }; },
-    async set(values) { Object.assign(data, structuredClone(values)); },
-  } } };
+  const fixture = vaultApi(people);
+  const data = fixture.local;
+  globalThis.chrome = fixture.api;
+  await fixture.execute("setup", { password: testPassword });
+  const attachVaultGate = async (content, ready) => { content.hidden = false; await ready(); };
   const dom = new JSDOM(readFileSync("extension/people.html", "utf8"), { url: "https://extension-test.invalid/people.html", runScripts: "outside-only" });
   const { window } = dom;
-  Object.assign(window, { fields, normalizePerson, personName, loadPeople, savePerson, deletePerson, importPeople, createBackup, maxBackupBytes, addressCountries, findAddressCountry, attachCountryPicker, Blob });
+  Object.assign(window, { fields, normalizePerson, personName, loadPeople, savePerson, deletePerson, importPeople, exportPeople, attachVaultGate, createBackup, maxBackupBytes, addressCountries, findAddressCountry, attachCountryPicker, Blob });
   let downloaded;
   window.URL.createObjectURL = (blob) => { downloaded = { blob }; return "blob:local-test"; };
   window.URL.revokeObjectURL = () => {};
@@ -28,7 +29,7 @@ async function editor(people = [initial()]) {
   const source = readFileSync("extension/people.js", "utf8").replace(/^import .*;\n/gm, "");
   window.eval(source);
   await flush();
-  return { dom, data, download: () => downloaded };
+  return { dom, data, fixture, download: () => downloaded };
 }
 
 test("export button downloads saved profiles while leaving unsaved edits intact", async () => {
@@ -38,10 +39,12 @@ test("export button downloads saved profiles while leaving unsaved edits intact"
     document.getElementById("fam").value = "Несохранённое имя";
     document.getElementById("fam").dispatchEvent(new Event("input", { bubbles: true }));
     document.getElementById("export").click();
+    await page.fixture.execute("status");
     await flush();
     const download = page.download();
     assert.match(download.filename, /^kdmid-people-\d{4}-\d{2}-\d{2}\.json$/);
-    assert.deepEqual(readBackup(await download.blob.text()), [initial()]);
+    const backup = JSON.parse(await download.blob.text());
+    assert.deepEqual(await decryptPeople(backup, await deriveKey(testPassword, backup.salt)), [initial()]);
     assert.equal(document.getElementById("fam").value, "Несохранённое имя");
     assert.match(document.getElementById("backup-status").textContent, /Несохранённые изменения/);
     assert.equal(document.getElementById("export").disabled, false);
@@ -60,18 +63,19 @@ test("file picker import updates the list, keeps the editor, and reports malform
     const choose = async (contents) => {
       Object.defineProperty(input, "files", { configurable: true, value: [{ size: contents.length, async text() { return contents; } }] });
       input.dispatchEvent(new Event("change"));
+      await page.fixture.execute("status");
       await flush();
     };
     await choose(text);
-    assert.equal(page.data.people.length, 2);
+    assert.equal((await page.fixture.execute("load")).length, 2);
     assert.match(document.getElementById("list").textContent, /Другой Тест/);
     assert.equal(name.value, "Несохранённое имя");
     assert.match(document.getElementById("backup-status").textContent, /Добавлено людей: 1/);
     await choose(text);
-    assert.equal(page.data.people.length, 2);
+    assert.equal((await page.fixture.execute("load")).length, 2);
     assert.match(document.getElementById("backup-status").textContent, /пропущено: 1/);
     await choose("not JSON");
-    assert.equal(page.data.people.length, 2);
+    assert.equal((await page.fixture.execute("load")).length, 2);
     assert.equal(document.getElementById("backup-status").className, "error");
     assert.equal(document.getElementById("import").disabled, false);
   } finally { page.dom.window.close(); delete globalThis.chrome; }
@@ -91,15 +95,17 @@ test("country suggestions match the portal and saving requires a valid selection
     control.dispatchEvent(new Event("input", { bubbles: true }));
     assert.equal(control.checkValidity(), false);
     document.getElementById("save").click();
+    await page.fixture.execute("status");
     await flush();
-    assert.equal(page.data.people[0].country, "");
+    assert.equal((await page.fixture.execute("load"))[0].country, "");
     control.value = "Австрия";
     control.dispatchEvent(new Event("change", { bubbles: true }));
     assert.equal(control.value, "АВСТРИЯ");
     assert.equal(control.checkValidity(), true);
     document.getElementById("save").click();
+    await page.fixture.execute("status");
     await flush();
-    assert.equal(page.data.people[0].country, "АВСТРИЯ");
+    assert.equal((await page.fixture.execute("load"))[0].country, "АВСТРИЯ");
   } finally { page.dom.window.close(); delete globalThis.chrome; }
 });
 
@@ -110,8 +116,8 @@ test("legacy country text remains accessible without losing the saved person", a
     document.querySelector("#list .person").click();
     assert.equal(document.getElementById("country").value, "Россия");
     assert.equal(document.getElementById("country").checkValidity(), false);
-    assert.equal(page.data.people.length, 1);
-    assert.equal(page.data.people[0].country, "Россия");
+    assert.equal((await page.fixture.execute("load")).length, 1);
+    assert.equal((await page.fixture.execute("load"))[0].country, "Россия");
   } finally { page.dom.window.close(); delete globalThis.chrome; }
 });
 

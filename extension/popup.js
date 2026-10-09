@@ -1,3 +1,4 @@
+import { attachVaultGate } from "./vault-ui.js";
 import { fillPerson } from "./autofill.js";
 import { loadPeople } from "./storage.js";
 import { personName } from "./profiles.js";
@@ -26,8 +27,10 @@ async function apply(overwrite = false) {
   document.getElementById("replace").disabled = true;
   show("Заполняю поля…");
   try {
+    const current = (await loadPeople()).find((item) => item.id === person.id);
+    if (!current) throw new Error("Человек удалён. Откройте расширение снова.");
     await chrome.storage.local.set({ selectedPersonId: person.id });
-    const results = await chrome.scripting.executeScript({ target: { tabId }, func: fillPerson, args: [person, overwrite] });
+    const results = await chrome.scripting.executeScript({ target: { tabId }, func: fillPerson, args: [current, overwrite] });
     const result = results[0]?.result;
     if (!result) throw new Error("Не удалось получить результат заполнения.");
     if (result.conflicts) {
@@ -58,9 +61,11 @@ document.getElementById("replace").addEventListener("click", () => apply(true));
 document.getElementById("cancel").addEventListener("click", () => { confirmation.hidden = true; show("Замена отменена."); });
 select.addEventListener("change", () => { confirmation.hidden = true; show(""); });
 
-async function init() {
+async function init(current = () => true) {
   try {
-    people = await loadPeople();
+    const saved = await loadPeople();
+    if (!current()) return;
+    people = saved;
     if (!people.length) {
       select.add(new Option("Пока нет сохранённых людей", ""));
       show("Откройте «Мои люди» и добавьте первого человека.");
@@ -75,6 +80,7 @@ async function init() {
       show("Откройте форму человека на notary.kdmid.ru.");
       return;
     }
+    if (!current()) return;
     tabId = tab.id;
     fill.disabled = false;
   } catch {
@@ -82,4 +88,12 @@ async function init() {
   }
 }
 
-init();
+attachVaultGate(document.getElementById("vault-content"), init, () => {
+  people = [];
+  tabId = undefined;
+  select.replaceChildren();
+  select.disabled = true;
+  fill.disabled = true;
+  confirmation.hidden = true;
+  status.textContent = "";
+});

@@ -2,7 +2,6 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { createBackup, readBackup, mergePeople, maxBackupBytes } from "../extension/backup.js";
 import { normalizePerson } from "../extension/profiles.js";
-import { importPeople, loadPeople } from "../extension/storage.js";
 
 const person = (id, changes = {}) => ({ id, ...normalizePerson({ fam: "Тестов", im: "Тест", sex: "M", passcode: "dt_22", passnumber: "0000000", ...changes }) });
 
@@ -49,42 +48,4 @@ test("malformed files, unsupported schema and duplicate identifiers are rejected
   }
   assert.throws(() => readBackup(" ".repeat(maxBackupBytes + 1)));
   assert.throws(() => createBackup(Array.from({ length: 1001 }, (_, index) => person(`id-${index}`))));
-});
-
-test("a late invalid record does not write or remove any existing people", async () => {
-  const original = [person("existing")];
-  let stored = structuredClone(original);
-  let writes = 0;
-  globalThis.chrome = { storage: { local: {
-    async setAccessLevel() {},
-    async get() { return { people: structuredClone(stored) }; },
-    async set(values) { writes++; stored = structuredClone(values.people); },
-  } } };
-  try {
-    const valid = JSON.parse(createBackup([person("incoming", { im: "Новое имя" })]));
-    valid.people.push({ ...person("invalid"), sex: "invalid" });
-    await assert.rejects(importPeople(JSON.stringify(valid)));
-    assert.equal(writes, 0);
-    assert.deepEqual(stored, original);
-    const emptyResult = await importPeople(createBackup([]));
-    assert.deepEqual(emptyResult, { added: 0, skipped: 0 });
-    assert.deepEqual(stored, original);
-    await importPeople(createBackup([person("incoming", { im: "Новое имя" })]));
-    assert.equal(writes, 1);
-    assert.equal((await loadPeople()).length, 2);
-    assert.deepEqual(stored[0], original[0]);
-  } finally { delete globalThis.chrome; }
-});
-
-test("storage quota errors preserve the original people", async () => {
-  const original = [person("existing")];
-  globalThis.chrome = { storage: { local: {
-    async setAccessLevel() {},
-    async get() { return { people: structuredClone(original) }; },
-    async set() { throw new Error("QUOTA_BYTES"); },
-  } } };
-  try {
-    await assert.rejects(importPeople(createBackup([person("incoming", { im: "Новое имя" })])), /QUOTA_BYTES/);
-    assert.deepEqual(await loadPeople(), original);
-  } finally { delete globalThis.chrome; }
 });

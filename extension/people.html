@@ -13,7 +13,7 @@
       <h1>Мои люди</h1>
       <p class="muted">Введите данные один раз. В открытой форме портала выбирайте человека и нажимайте «Заполнить» в расширении.</p>
     </header>
-    <div class="layout">
+    <div class="layout" id="vault-content" hidden>
       <aside>
         <button id="new" type="button">Добавить человека</button>
         <label for="search">Найти человека</label>
@@ -22,11 +22,13 @@
         <div class="backup-actions">
           <button id="export" type="button" class="secondary">Экспорт людей</button>
           <button id="import" type="button" class="secondary">Импорт людей</button>
+          <label for="backup-password">Пароль импортируемого файла</label>
+          <input id="backup-password" type="password" autocomplete="off" placeholder="Для зашифрованного экспорта">
           <input id="import-file" type="file" accept=".json,application/json" hidden>
         </div>
         <p id="backup-status" role="status" aria-live="polite"></p>
-        <p class="footnote">Экспорт сохраняет всех людей в файл JSON. Файл содержит персональные данные без шифрования — храните его в надёжном месте.</p>
-        <p class="footnote">Данные хранятся в этом профиле Chrome. При удалении расширения они удаляются.</p>
+        <p class="footnote">Экспорт зашифрован паролем хранилища. Для импорта нужен пароль, действовавший при экспорте. Старые незашифрованные файлы также поддерживаются.</p>
+        <p class="footnote">Данные хранятся в этом профиле Chrome. При удалении расширения они удаляются. При блокировке несохранённые правки очищаются.</p>
       </aside>
       <section class="card">
         <h2 id="editor-title">Новый человек</h2>

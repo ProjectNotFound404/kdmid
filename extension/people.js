@@ -1,6 +1,7 @@
+import { attachVaultGate } from "./vault-ui.js";
 import { fields, normalizePerson, personName } from "./profiles.js";
-import { loadPeople, savePerson, deletePerson, importPeople } from "./storage.js";
-import { createBackup, maxBackupBytes } from "./backup.js";
+import { loadPeople, savePerson, deletePerson, importPeople, exportPeople } from "./storage.js";
+import { maxBackupBytes } from "./backup.js";
 import { addressCountries, findAddressCountry } from "./countries.js";
 import { attachCountryPicker } from "./country-picker.js";
 
@@ -16,6 +17,7 @@ let busy = false;
 for (const field of fields) {
   const row = document.createElement("div");
   row.className = "field";
+  if (field.type === "textarea" || ["passcode", "namelat", "citizenship", "country"].includes(field.key)) row.classList.add("wide");
   const label = document.createElement("label");
   label.htmlFor = field.key;
   label.textContent = field.label;
@@ -189,7 +191,7 @@ async function transfer(action) {
 document.getElementById("export").addEventListener("click", () => transfer(async () => {
   const saved = await loadPeople();
   if (!saved.length) throw new Error("Пока нет сохранённых людей для экспорта.");
-  const blob = new Blob([createBackup(saved)], { type: "application/json;charset=utf-8" });
+  const blob = new Blob([await exportPeople()], { type: "application/json;charset=utf-8" });
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
@@ -207,16 +209,32 @@ importFile.addEventListener("change", () => {
   importFile.value = "";
   if (!file) return;
   transfer(async () => {
-    if (file.size > maxBackupBytes) throw new Error("Файл слишком большой. Максимальный размер — 5 МБ.");
-    const result = await importPeople(await file.text());
+    if (file.size > maxBackupBytes * 2) throw new Error("Файл слишком большой. Максимальный размер — 10 МБ.");
+    const passwordControl = document.getElementById("backup-password");
+    const password = passwordControl.value;
+    passwordControl.value = "";
+    const result = await importPeople(await file.text(), password);
     people = await loadPeople();
     renderList();
     backupStatus.textContent = `Добавлено людей: ${result.added}. Совпадающих записей пропущено: ${result.skipped}. Существующие записи сохранены.`;
   });
 });
 
-loadPeople().then((saved) => { people = saved; edit(); }).catch(() => {
-  status.textContent = "Не удалось загрузить сохранённых людей.";
-  status.className = "error";
-  for (const id of ["save", "export", "import"]) document.getElementById(id).disabled = true;
+attachVaultGate(document.getElementById("vault-content"), async (current = () => true) => {
+  const saved = await loadPeople();
+  if (!current()) return;
+  people = saved;
+  edit();
+}, () => {
+  people = [];
+  selectedId = null;
+  dirty = false;
+  form.reset();
+  list.replaceChildren();
+  document.getElementById("search").value = "";
+  document.getElementById("backup-password").value = "";
+  document.getElementById("editor-title").textContent = "Новый человек";
+  document.getElementById("country-options").replaceChildren();
+  status.textContent = "";
+  backupStatus.textContent = "";
 });
