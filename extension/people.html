@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Мои люди — КД МИД</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="workspace">
+    <header>
+      <p class="eyebrow">Помощник для notary.kdmid.ru</p>
+      <h1>Мои люди</h1>
+      <p class="muted">Введите данные один раз. В открытой форме портала выбирайте человека и нажимайте «Заполнить» в расширении.</p>
+    </header>
+    <div class="layout">
+      <aside>
+        <button id="new" type="button">Добавить человека</button>
+        <label for="search">Найти человека</label>
+        <input id="search" type="search" placeholder="Фамилия или имя">
+        <nav id="list" aria-label="Сохранённые люди"></nav>
+        <div class="backup-actions">
+          <button id="export" type="button" class="secondary">Экспорт людей</button>
+          <button id="import" type="button" class="secondary">Импорт людей</button>
+          <input id="import-file" type="file" accept=".json,application/json" hidden>
+        </div>
+        <p id="backup-status" role="status" aria-live="polite"></p>
+        <p class="footnote">Экспорт сохраняет всех людей в файл JSON. Файл содержит персональные данные без шифрования — храните его в надёжном месте.</p>
+        <p class="footnote">Данные хранятся в этом профиле Chrome. При удалении расширения они удаляются.</p>
+      </aside>
+      <section class="card">
+        <h2 id="editor-title">Новый человек</h2>
+        <form id="editor" autocomplete="off">
+          <div id="fields"></div>
+          <div class="actions">
+            <button type="submit" id="save">Сохранить человека</button>
+            <button type="button" id="delete" class="danger" hidden>Удалить</button>
+          </div>
+        </form>
+        <p id="status" role="status" aria-live="polite"></p>
+      </section>
+    </div>
+  </main>
+  <script type="module" src="people.js"></script>
+</body>
+</html>

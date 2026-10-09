@@ -1,0 +1,60 @@
+:root { color-scheme: light; font-family: system-ui, -apple-system, sans-serif; color: #172e40; background: #f3f6f8; }
+* { box-sizing: border-box; }
+body { margin: 0; font-size: 15px; line-height: 1.5; }
+h1 { font-size: 28px; line-height: 1.2; margin: 0 0 14px; }
+h2 { margin: 0 0 24px; font-size: 21px; }
+p { margin: 0 0 18px; }
+label { display: block; margin-bottom: 6px; font-weight: 600; }
+input, select, textarea, button { font: inherit; }
+input, select, textarea { display: block; width: 100%; border: 1px solid #bac7d1; border-radius: 7px; padding: 10px 12px; background: #fff; color: inherit; }
+textarea { resize: vertical; }
+input:focus, select:focus, textarea:focus, button:focus-visible { outline: 3px solid #87bada; outline-offset: 2px; }
+button { border: 1px solid transparent; border-radius: 7px; background: #196487; color: white; padding: 10px 16px; font-weight: 600; cursor: pointer; }
+button:hover { background: #104d69; }
+button:disabled { opacity: .5; cursor: default; }
+input:disabled, select:disabled { background: #eef1f3; color: #61717d; }
+.secondary { background: #fff; color: #196487; border-color: #bac7d1; }
+.secondary:hover { background: #eaf2f6; }
+.danger { background: #fff; color: #a03030; border-color: #dec0c0; }
+.danger:hover { background: #fff0f0; }
+.muted, small, .footnote { color: #546777; }
+.footnote { font-size: 12px; margin: 18px 0 0; }
+.eyebrow { color: #196487; font-size: 13px; font-weight: 600; margin-bottom: 10px; }
+.workspace { max-width: 1100px; margin: 40px auto; padding: 0 24px; }
+header { max-width: 760px; margin-bottom: 30px; }
+.layout { display: grid; grid-template-columns: 260px 1fr; gap: 28px; align-items: start; }
+aside { position: sticky; top: 24px; }
+aside > button { width: 100%; margin-bottom: 24px; }
+#list { margin-top: 18px; display: grid; gap: 8px; }
+.person { text-align: left; background: transparent; color: #172e40; overflow-wrap: anywhere; }
+.person:hover, .person[aria-current="true"] { background: #dfeef5; }
+.backup-actions { display: grid; gap: 8px; margin-top: 24px; }
+#backup-status { margin: 12px 0 0; font-size: 13px; }
+.card { background: white; border: 1px solid #dde5eb; border-radius: 12px; padding: 28px; }
+#fields { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.field { min-width: 0; }
+.field:has(textarea), .field:has(#passcode), .field:has(#namelat), .field:has(#citizenship), .field:has(#country) { grid-column: 1 / -1; }
+small { display: block; font-size: 12px; margin-top: 6px; }
+.checkbox { display: flex; align-items: center; gap: 10px; }
+.checkbox input { width: 18px; height: 18px; }
+.checkbox label { margin: 0; font-weight: 400; }
+.country-picker { position: relative; }
+.country-picker input { padding-right: 48px; }
+.country-toggle { position: absolute; right: 3px; top: 3px; bottom: 3px; width: 40px; padding: 0; background: transparent; color: #196487; }
+.country-toggle:hover { background: #eaf2f6; }
+.country-options { position: absolute; z-index: 10; top: calc(100% + 4px); left: 0; right: 0; max-height: 250px; overflow-y: auto; border: 1px solid #bac7d1; border-radius: 7px; background: #fff; box-shadow: 0 4px 12px #172e4020; }
+.country-option, .country-empty { padding: 10px 12px; }
+.country-option { cursor: pointer; }
+.country-option:hover, .country-option[aria-selected="true"] { background: #dfeef5; }
+.country-empty { color: #546777; }
+.actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 28px; }
+#status { margin: 18px 0 0; white-space: pre-line; }
+.error { color: #a03030; }
+.popup { width: 370px; background: #fff; padding: 22px; }
+.popup h1 { font-size: 22px; }
+.popup button { width: 100%; margin-top: 12px; }
+.popup #status { margin-bottom: 14px; }
+#confirm { margin-top: 18px; background: #fff4e0; padding: 14px; border-radius: 8px; }
+#confirm p { margin: 0; }
+[hidden] { display: none !important; }
+@media (max-width: 720px) { .workspace { margin: 24px auto; padding: 0 16px; } .layout { grid-template-columns: 1fr; } aside { position: static; } #fields { grid-template-columns: 1fr; } .card { padding: 20px; } }

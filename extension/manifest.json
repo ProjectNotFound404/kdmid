@@ -1,0 +1,19 @@
+{
+  "manifest_version": 3,
+  "name": "КД МИД — мои люди",
+  "description": "Сохраните данные людей и заполняйте ими открытую форму участника на notary.kdmid.ru.",
+  "version": "0.1.2",
+  "minimum_chrome_version": "102",
+  "permissions": ["activeTab", "scripting", "storage"],
+  "action": {
+    "default_title": "Заполнить данные человека",
+    "default_popup": "popup.html"
+  },
+  "options_ui": {
+    "page": "people.html",
+    "open_in_tab": true
+  },
+  "content_security_policy": {
+    "extension_pages": "default-src 'self'; script-src 'self'; style-src 'self'; object-src 'none'; connect-src 'none'"
+  }
+}

@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Мои люди</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="popup">
+  <main>
+    <h1>Заполнить данные человека</h1>
+    <p class="muted">Выберите тип участника на портале, затем человека из списка.</p>
+    <label for="person">Сохранённый человек</label>
+    <select id="person" disabled></select>
+    <button id="fill" type="button" disabled>Заполнить</button>
+    <section id="confirm" hidden>
+      <p id="conflicts"></p>
+      <button id="replace" type="button">Заменить данными выбранного человека</button>
+      <button id="cancel" class="secondary" type="button">Отмена</button>
+    </section>
+    <p id="status" role="status" aria-live="polite"></p>
+    <button id="manage" class="secondary" type="button">Мои люди — добавить или изменить</button>
+    <p class="footnote">После заполнения проверьте поля и нажмите «Добавить» на портале.</p>
+  </main>
+  <script type="module" src="popup.js"></script>
+</body>
+</html>
