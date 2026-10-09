@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "КД МИД — мои люди",
+  "name": "КД МИД: помощь с формами notary.kdmid.ru",
   "description": "Автозаполнение ФИО, паспортных данных и адресов участников нотариальных заявлений на notary.kdmid.ru. Локальное хранилище.",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "minimum_chrome_version": "102",
   "permissions": [
     "activeTab",
