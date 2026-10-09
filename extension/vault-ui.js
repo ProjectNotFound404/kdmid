@@ -4,7 +4,9 @@ export async function attachVaultGate(content, ready, clear) {
   const gate = document.createElement("section");
   gate.className = "card vault-gate";
   const title = document.createElement("h2");
+  title.textContent = "Подготавливаю хранилище";
   const note = document.createElement("p");
+  note.textContent = "Проверяем состояние защиты данных…";
   const disclosure = document.createElement("p");
   disclosure.className = "footnote";
   disclosure.textContent = "Расширение хранит ФИО, паспортные данные и адреса зашифрованными на этом компьютере. Разработчик их не получает. После нажатия «Заполнить» выбранные данные доступны официальному порталу notary.kdmid.ru.";
@@ -29,6 +31,8 @@ export async function attachVaultGate(content, ready, clear) {
   repeatLabel.append(repeat);
   const submit = document.createElement("button");
   submit.type = "submit";
+  submit.textContent = "Загрузка…";
+  submit.disabled = true;
   const status = document.createElement("p");
   status.setAttribute("role", "status");
   form.append(label, repeatLabel, submit);
@@ -67,6 +71,7 @@ export async function attachVaultGate(content, ready, clear) {
         password.minLength = setup ? 12 : 0;
         password.autocomplete = setup ? "new-password" : "current-password";
         submit.textContent = setup ? "Зашифровать и продолжить" : "Разблокировать";
+        submit.disabled = false;
       }
     } catch (error) {
       clear();

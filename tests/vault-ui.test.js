@@ -12,6 +12,26 @@ async function waitFor(check) {
   assert.fail("Timed out waiting for vault UI");
 }
 
+test("vault gate shows a loading state before the background worker responds", async () => {
+  const dom = new JSDOM('<main><div id="content" hidden></div></main>', { runScripts: "outside-only" });
+  const { window } = dom;
+  let respond;
+  window.chrome = { storage: { onChanged: { addListener() {} }, session: { get: async () => ({}) } } };
+  window.vaultRequest = () => new Promise((resolve) => { respond = resolve; });
+  const source = readFileSync("extension/vault-ui.js", "utf8").replace(/^import .*;\n/gm, "").replace("export async function", "async function");
+  window.eval(`${source}\nwindow.attachVaultGate = attachVaultGate;`);
+  try {
+    const opening = window.attachVaultGate(window.document.getElementById("content"), async () => {}, () => {});
+    const gate = window.document.querySelector(".vault-gate");
+    assert.match(gate.querySelector("h2").textContent, /Подготавливаю/);
+    assert.match(gate.querySelector("p").textContent, /Проверяем/);
+    assert.equal(gate.querySelector("button").disabled, true);
+    respond({ setup: true, legacy: false });
+    await opening;
+    assert.equal(gate.querySelector("button").textContent, "Зашифровать и продолжить");
+  } finally { dom.window.close(); }
+});
+
 test("setup requires matching passwords, unlock masks input, and lock clears visible personal data", async () => {
   const fixture = vaultApi([{ id: "test", fam: "Тестов", im: "Тест" }]);
   const dom = new JSDOM('<main><div id="content" hidden><span id="name"></span></div></main>', { runScripts: "outside-only" });
